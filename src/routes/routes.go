@@ -7,11 +7,13 @@ import (
 	"strings"
 	"os"
 	"bufio"
+	"controllers"
 )
 
 func Register(){
+	homeController := controllers.NewHomeController()
 	router := mux.NewRouter()
-	finalHandler := http.HandlerFunc(final)
+	finalHandler := http.HandlerFunc(homeController.Index)
 	router.Handle("/",middlewareOne(finalHandler))
 
 	http.Handle("/", router)
