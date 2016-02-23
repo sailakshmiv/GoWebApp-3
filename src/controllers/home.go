@@ -20,8 +20,10 @@ func NewHomeController()(*HomeController){
 }
 
 func (this *HomeController) Index(w http.ResponseWriter, r *http.Request){	 
-	 template := this.templates.Lookup("test.html")
+	 template := this.templates.Lookup("_layout.html")
 	 log.Println("template ok")
+	 
+	 template.ParseFiles("index.html");
 	 template.Execute(w, nil)
 	 
 	//w.Write([]byte("OK"))
