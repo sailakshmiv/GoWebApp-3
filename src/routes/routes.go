@@ -20,6 +20,7 @@ func Register(){
 	
 	http.HandleFunc("/img/", serveResource)
 	http.HandleFunc("/css/", serveResource)
+	http.HandleFunc("/lib/", serveResource)
 
 }
 
