@@ -1,12 +1,13 @@
 package main
 
 import (
-  "net/http"
-  "routes"
+	"net/http"
+
+	"github.com/yanndr/GoWebApp/routes"
 )
 
 func main() {
-	
-	routes.Register();
+
+	routes.Register()
 	http.ListenAndServe(":8000", nil)
 }

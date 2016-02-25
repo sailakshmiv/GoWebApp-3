@@ -1,23 +1,24 @@
 package routes
 
 import (
+	"bufio"
 	"log"
 	"net/http"
-	"github.com/gorilla/mux"
-	"strings"
 	"os"
-	"bufio"
-	"controllers"
+	"strings"
+
+	"github.com/gorilla/mux"
+	"github.com/yanndr/GoWebApp/controllers"
 )
 
-func Register(){
+func Register() {
 	homeController := controllers.NewHomeController()
 	router := mux.NewRouter()
 	finalHandler := http.HandlerFunc(homeController.Index)
-	router.Handle("/",middlewareOne(finalHandler))
+	router.Handle("/", middlewareOne(finalHandler))
 
 	http.Handle("/", router)
-	
+
 	http.HandleFunc("/img/", serveResource)
 	http.HandleFunc("/css/", serveResource)
 	http.HandleFunc("/lib/", serveResource)
@@ -25,16 +26,16 @@ func Register(){
 }
 
 func middlewareOne(next http.Handler) http.Handler {
-  return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-    log.Println("Executing middlewareOne")
-    next.ServeHTTP(w, r)
-    log.Println("Executing middlewareOne again")
-  })
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Executing middlewareOne")
+		next.ServeHTTP(w, r)
+		log.Println("Executing middlewareOne again")
+	})
 }
 
 func final(w http.ResponseWriter, r *http.Request) {
-  log.Println("Executing finalHandler")
-  w.Write([]byte("OK"))
+	log.Println("Executing finalHandler")
+	w.Write([]byte("OK"))
 }
 
 func serveResource(w http.ResponseWriter, req *http.Request) {
@@ -47,13 +48,13 @@ func serveResource(w http.ResponseWriter, req *http.Request) {
 	} else {
 		contentType = "text/plain"
 	}
-	
+
 	f, err := os.Open(path)
-	
+
 	if err == nil {
 		defer f.Close()
 		w.Header().Add("Content-Type", contentType)
-		
+
 		br := bufio.NewReader(f)
 		br.WriteTo(w)
 	} else {
