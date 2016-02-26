@@ -1,0 +1,19 @@
+{
+  "name": "gowebapp",
+  "version": "1.0.0",
+  "description": "This is my test app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yanndr/GoWebApp.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yanndr/GoWebApp/issues"
+  },
+  "homepage": "https://github.com/yanndr/GoWebApp#readme"
+}

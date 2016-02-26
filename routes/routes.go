@@ -39,7 +39,7 @@ func final(w http.ResponseWriter, r *http.Request) {
 }
 
 func serveResource(w http.ResponseWriter, req *http.Request) {
-	path := "public" + req.URL.Path
+	path := "wwwroot" + req.URL.Path
 	var contentType string
 	if strings.HasSuffix(path, ".css") {
 		contentType = "text/css"
