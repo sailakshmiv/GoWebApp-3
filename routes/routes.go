@@ -6,16 +6,20 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/justinas/alice"
 	"github.com/yanndr/GoWebApp/controllers"
 )
 
 func Register() {
+
+	commonHandlers := alice.New(loggingHandler, recoverHandler)
+
 	homeController := controllers.NewHomeController()
 	router := mux.NewRouter()
-	finalHandler := http.HandlerFunc(homeController.Index)
-	router.Handle("/", middlewareOne(finalHandler))
+	router.Handle("/", commonHandlers.ThenFunc(homeController.Index))
 
 	http.Handle("/", router)
 
@@ -25,17 +29,30 @@ func Register() {
 
 }
 
-func middlewareOne(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Println("Executing middlewareOne")
+func loggingHandler(next http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		t1 := time.Now()
 		next.ServeHTTP(w, r)
-		log.Println("Executing middlewareOne again")
-	})
+		t2 := time.Now()
+		log.Printf("[%s] %q %v\n", r.Method, r.URL.String(), t2.Sub(t1))
+	}
+
+	return http.HandlerFunc(fn)
 }
 
-func final(w http.ResponseWriter, r *http.Request) {
-	log.Println("Executing finalHandler")
-	w.Write([]byte("OK"))
+func recoverHandler(next http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if err := recover(); err != nil {
+				log.Printf("panic: %+v", err)
+				http.Error(w, http.StatusText(500), 500)
+			}
+		}()
+
+		next.ServeHTTP(w, r)
+	}
+
+	return http.HandlerFunc(fn)
 }
 
 func serveResource(w http.ResponseWriter, req *http.Request) {
