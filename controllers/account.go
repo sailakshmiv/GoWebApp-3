@@ -20,15 +20,17 @@ func NewAccountController() *AccountController {
 }
 
 func (this *AccountController) Login(w http.ResponseWriter, r *http.Request) {
-	security.GetInstance().CreateCookie(w)
+
 	template := this.templates.Lookup("_layout.html")
-	template.ParseFiles("index.html")
+	template.ParseFiles("login.html")
 	template.Execute(w, nil)
 
 }
 
 func (this *AccountController) PostLogin(w http.ResponseWriter, r *http.Request) {
+
+	security.GetInstance().CreateCookie(w)
 	template := this.templates.Lookup("_layout.html")
-	template.ParseFiles("index.html")
+	template.ParseFiles("login.html")
 	template.Execute(w, nil)
 }

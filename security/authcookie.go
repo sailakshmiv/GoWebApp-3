@@ -35,27 +35,30 @@ func newAuthCookie() *AuthCookie {
 }
 
 func (*AuthCookie) CreateCookie(w http.ResponseWriter) {
-	log.Println("CreateCookie")
-
 	if encoded, err := cookieCodec.Encode("mycookie", "myvalue"); err == nil {
 		cookie := http.Cookie{
 			Name:  cookieName,
 			Value: encoded,
 			Path:  "/",
 		}
-		log.Println("CreateCookie ok")
+
 		http.SetCookie(w, &cookie)
 	} else {
 		log.Println(err)
 	}
-
-	log.Println("end CreateCookie")
 }
 
 func (*AuthCookie) ReadCookie(r *http.Request) bool {
 	log.Println("read cookie")
 	if cookie, err := r.Cookie(cookieName); err == nil {
-		log.Printf("Cookie %v", cookie)
+
+		var result string
+		if err = cookieCodec.Decode("mycookie", cookie.Value, &result); err == nil {
+			log.Println(result)
+		} else {
+			return false
+		}
+
 		return true
 	} else {
 		log.Println("something wrong with the cookie")
