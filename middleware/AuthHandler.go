@@ -24,6 +24,5 @@ func AuthHandler(next http.Handler) http.Handler {
 			}
 		}
 	}
-
 	return http.HandlerFunc(fn)
 }

@@ -1,10 +1,7 @@
 package routes
 
 import (
-	"bufio"
 	"net/http"
-	"os"
-	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/justinas/alice"
@@ -20,40 +17,15 @@ func Register() {
 	homeController := controllers.NewHomeController()
 	accountController := controllers.NewAccountController()
 
+	http.Handle("/lib/", http.StripPrefix("/lib/", http.FileServer(http.Dir("wwwroot/lib"))))
+	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("wwwroot/img"))))
+	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("wwwroot/css"))))
+	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("wwwroot/js"))))
+
 	router := mux.NewRouter()
 	router.Handle("/", authHandlers.ThenFunc(homeController.Index))
-
 	router.Handle("/Account/Login", commonHandlers.ThenFunc(accountController.Login)).Methods("GET")
 	router.Handle("/Account/Login", commonHandlers.ThenFunc(accountController.PostLogin)).Methods("POST")
-
 	http.Handle("/", router)
 
-	//	http.HandleFunc("/img/", serveResource)
-	http.Handle("/img/", authHandlers.ThenFunc(serveResource))
-	http.HandleFunc("/css/", serveResource)
-	http.HandleFunc("/lib/", serveResource)
-}
-
-func serveResource(w http.ResponseWriter, req *http.Request) {
-	path := "wwwroot" + req.URL.Path
-	var contentType string
-	if strings.HasSuffix(path, ".css") {
-		contentType = "text/css"
-	} else if strings.HasSuffix(path, ".png") {
-		contentType = "image/png"
-	} else {
-		contentType = "text/plain"
-	}
-
-	f, err := os.Open(path)
-
-	if err == nil {
-		defer f.Close()
-		w.Header().Add("Content-Type", contentType)
-
-		br := bufio.NewReader(f)
-		br.WriteTo(w)
-	} else {
-		w.WriteHeader(404)
-	}
 }
