@@ -14,7 +14,7 @@ import (
 
 func Register() {
 
-	commonHandlers := alice.New(middleware.LoggingHandler, middleware.RecoverHandler)
+	commonHandlers := alice.New(middleware.LoggingHandler, middleware.RecoverHandler, middleware.Gzip)
 	authHandlers := commonHandlers.Append(middleware.AuthHandler)
 
 	homeController := controllers.NewHomeController()
@@ -28,10 +28,10 @@ func Register() {
 
 	http.Handle("/", router)
 
-	http.HandleFunc("/img/", serveResource)
+	//	http.HandleFunc("/img/", serveResource)
+	http.Handle("/img/", authHandlers.ThenFunc(serveResource))
 	http.HandleFunc("/css/", serveResource)
 	http.HandleFunc("/lib/", serveResource)
-
 }
 
 func serveResource(w http.ResponseWriter, req *http.Request) {
