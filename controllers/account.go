@@ -1,12 +1,13 @@
 package controllers
 
 import (
-	"errors"
 	"html/template"
 	"log"
 	"net/http"
 
+	"github.com/yanndr/GoWebApp/models"
 	"github.com/yanndr/GoWebApp/security"
+	"github.com/yanndr/GoWebApp/viewmodels"
 )
 
 type AccountController struct {
@@ -17,37 +18,22 @@ func NewAccountController() *AccountController {
 	controller := new(AccountController)
 	controller.templates = template.New("templates")
 	controller.PopulateTemplates("templates/account", controller.templates)
-
 	return controller
 }
 
-type LoginViewModel struct {
-	Title     string
-	ReturnUrl string
-}
-
 func (this *AccountController) Login(w http.ResponseWriter, r *http.Request) {
-	vm := new(LoginViewModel)
+	vm := new(viewmodels.Login)
 	vm.Title = "Login"
-
-	returnUrl := r.URL.Query()["returnUrl"][0]
-
-	vm.ReturnUrl = returnUrl
-
-	log.Printf("returnUrl:%s", returnUrl)
-
 	template := this.templates.Lookup("_layout.html")
 	template.ParseFiles("login.html")
 	template.Execute(w, vm)
-
 }
 
 func (this *AccountController) PostLogin(w http.ResponseWriter, r *http.Request) {
-
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
-	if user, err := login(username, password); err == nil {
+	if user, err := models.Login(username, password); err == nil {
 		log.Print(user)
 		security.GetInstance().CreateCookie(w)
 
@@ -67,24 +53,4 @@ func (this *AccountController) PostLogin(w http.ResponseWriter, r *http.Request)
 	template := this.templates.Lookup("_layout.html")
 	template.ParseFiles("login.html")
 	template.Execute(w, nil)
-}
-
-type User struct {
-	Id   int
-	Name string
-}
-
-func login(username string, password string) (*User, error) {
-
-	//hashedPassword := sha512.Sum512([]byte(password))
-	//b64Pass := base64.StdEncoding.EncodeToString(hashedPassword[:])
-
-	if username == "yann" && password == "password" {
-		result := User{Id: 1, Name: "Yann"}
-		return &result, nil
-	} else {
-		log.Println("Login Failed")
-		return nil, errors.New("Nope")
-	}
-
 }

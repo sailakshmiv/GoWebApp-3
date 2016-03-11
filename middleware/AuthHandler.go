@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	"encoding/base64"
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/yanndr/GoWebApp/security"
 )
@@ -15,7 +15,8 @@ func AuthHandler(next http.Handler) http.Handler {
 
 			next.ServeHTTP(w, r)
 		} else {
-			returnUrl := base64.URLEncoding.EncodeToString([]byte(r.RequestURI))
+			//returnUrl := base64.URLEncoding.EncodeToString([]byte(r.RequestURI))
+			returnUrl := url.QueryEscape(r.RequestURI)
 
 			if returnUrl == "" {
 				http.Redirect(w, r, "/Account/Login", 307)

@@ -3,6 +3,8 @@ package controllers
 import (
 	"html/template"
 	"net/http"
+
+	"github.com/yanndr/GoWebApp/viewmodels"
 )
 
 type HomeController struct {
@@ -17,14 +19,10 @@ func NewHomeController() *HomeController {
 	return controller
 }
 
-type homeViewModel struct {
-	Title string
-}
-
 func (this *HomeController) Index(w http.ResponseWriter, r *http.Request) {
 	template := this.templates.Lookup("_layout.html")
 
-	var hvm homeViewModel
+	var hvm viewmodels.Home
 	hvm.Title = "Home"
 	template.ParseFiles("index.html")
 	template.Execute(w, hvm)
