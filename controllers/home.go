@@ -20,10 +20,9 @@ func NewHomeController() *HomeController {
 }
 
 func (this *HomeController) Index(w http.ResponseWriter, r *http.Request) {
-	template := this.templates.Lookup("_layout.html")
 
 	var hvm viewmodels.Home
 	hvm.Title = "Home"
-	template.ParseFiles("index.html")
-	template.Execute(w, hvm)
+
+	this.View(w, "_layout.html", "index.html", hvm)
 }

@@ -2,11 +2,14 @@ package controllers
 
 import (
 	"html/template"
+	"net/http"
 	"os"
 )
 
 type BaseController struct {
-	templates *template.Template
+	templates      *template.Template
+	ResponseWriter http.ResponseWriter
+	Request        *http.Request
 }
 
 func (this *BaseController) PopulateTemplates(directory string, templates *template.Template) {
@@ -27,9 +30,13 @@ func (this *BaseController) populateTemplates(directory string, templates *templ
 	for _, pathInfo := range templatePathsRaw {
 		if !pathInfo.IsDir() {
 			*templatePaths = append(*templatePaths, basePath+"/"+pathInfo.Name())
-		} /*else{
-			populateTemplates(basePath + "/" + pathInfo.Name(),templates,templatePaths)
-		}*/
+		}
 	}
 	templates.ParseFiles(*templatePaths...)
+}
+
+func (this *BaseController) View(w http.ResponseWriter, layout, view string, viewModel interface{}) {
+	template := this.templates.Lookup(layout)
+	template.ParseFiles(view)
+	template.Execute(w, viewModel)
 }

@@ -24,9 +24,8 @@ func NewAccountController() *AccountController {
 func (this *AccountController) Login(w http.ResponseWriter, r *http.Request) {
 	vm := new(viewmodels.Login)
 	vm.Title = "Login"
-	template := this.templates.Lookup("_layout.html")
-	template.ParseFiles("login.html")
-	template.Execute(w, vm)
+	vm.ReturnUrl = r.URL.Query()["returnUrl"][0]
+	this.View(w, "_layout.html", "login.html", vm)
 }
 
 func (this *AccountController) PostLogin(w http.ResponseWriter, r *http.Request) {
@@ -38,6 +37,7 @@ func (this *AccountController) PostLogin(w http.ResponseWriter, r *http.Request)
 		security.GetInstance().CreateCookie(w)
 
 		returnUrl := r.URL.Query()["returnUrl"]
+
 		log.Printf("returnUrl:%s", returnUrl)
 
 		/*decoded, err := base64.StdEncoding.DecodeString(returnUrl)
@@ -50,7 +50,13 @@ func (this *AccountController) PostLogin(w http.ResponseWriter, r *http.Request)
 		}*/
 	}
 
-	template := this.templates.Lookup("_layout.html")
-	template.ParseFiles("login.html")
-	template.Execute(w, nil)
+	this.Login(w, r)
 }
+
+/*func redirect(returnUrl string) {
+	if returnUrl != "" {
+		http.Redirect(w, r, returnUrl, 302)
+	} else {
+		http.Redirect(w, r, "/", 302)
+	}
+}*/
